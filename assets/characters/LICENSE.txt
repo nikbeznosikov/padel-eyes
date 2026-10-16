@@ -1,0 +1,7 @@
+Characters, hairstyles and animations by Quaternius (https://quaternius.com), CC0 1.0 Universal (public domain):
+- Universal Base Characters [Standard]: https://quaternius.itch.io/universal-base-characters
+- Universal Animation Library [Standard]: https://quaternius.itch.io/universal-animation-library
+https://creativecommons.org/publicdomain/zero/1.0/
+
+Changes for this app: textures resized to 1024 px or less and saved as JPEG, each model packed into one .glb,
+eye textures kept as PNG, and only the clips Idle_Loop, Jog_Fwd_Loop and Sprint_Loop kept.

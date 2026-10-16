@@ -1,0 +1,9 @@
+{
+  "name": "padel-eyes",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "check": "node scripts/check-puzzles.js",
+    "serve": "python3 -m http.server 3410"
+  }
+}

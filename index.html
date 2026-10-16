@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta name="theme-color" content="#11151a" />
+    <title>Padel Eyes: padel tactics from your side of the court</title>
+    <meta name="description" content="Padel tactics puzzles in 3D, seen from your own eyes on court. Pick the shot, watch the point and read why." />
+    <!-- Personal app shared by link only. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <meta property="og:title" content="Padel Eyes" />
+    <meta property="og:description" content="Padel tactics puzzles in 3D, seen from your own eyes on court." />
+    <meta property="og:type" content="website" />
+    <meta name="twitter:card" content="summary" />
+    <meta name="twitter:title" content="Padel Eyes" />
+    <meta name="twitter:description" content="Padel tactics puzzles in 3D, seen from your own eyes on court." />
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Ccircle cx='16' cy='16' r='14' fill='%23d8f03c'/%3E%3Cpath d='M6 10c6 3 14 3 20 0M6 22c6-3 14-3 20 0' stroke='%23fff' stroke-width='2' fill='none'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="style.css" />
+    <script type="importmap">
+      {
+        "imports": {
+          "three": "https://cdn.jsdelivr.net/npm/three@0.186.1/build/three.module.js",
+          "three/addons/": "https://cdn.jsdelivr.net/npm/three@0.186.1/examples/jsm/"
+        }
+      }
+    </script>
+    <script type="module" src="js/main.js"></script>
+  </head>
+  <body>
+    <main id="home" class="home">
+      <header>
+        <p class="eyebrow">Padel Eyes</p>
+        <h1>Padel tactics, seen from your side of the court</h1>
+        <p class="lead">Watch the point from your own eyes, stop at the key moment and choose your shot. Every answer links to its source.</p>
+      </header>
+
+      <section class="card" aria-labelledby="game-heading">
+        <h2 id="game-heading">Your game</h2>
+        <div class="game-grid">
+          <div class="choices">
+            <fieldset>
+              <legend>Side you play</legend>
+              <div class="segmented">
+                <label><input type="radio" name="side" value="left" /> Left side</label>
+                <label><input type="radio" name="side" value="right" /> Right side</label>
+              </div>
+            </fieldset>
+            <fieldset>
+              <legend>Racket hand</legend>
+              <div class="segmented">
+                <label><input type="radio" name="hand" value="left" /> Left hand</label>
+                <label><input type="radio" name="hand" value="right" /> Right hand</label>
+              </div>
+            </fieldset>
+          </div>
+          <figure class="mini-court">
+            <svg viewBox="0 0 100 110" role="group" aria-label="Your half of the court">
+              <rect x="2" y="2" width="96" height="106" rx="4" fill="#1f5fae" stroke="#cfe7e4" stroke-opacity="0.6" stroke-width="2" />
+              <line x1="2" y1="8" x2="98" y2="8" stroke="#f4f6f8" stroke-width="2.5" />
+              <text x="50" y="6" fill="#fff" font-size="5" text-anchor="middle" opacity="0.7">NET</text>
+              <line x1="2" y1="74" x2="98" y2="74" stroke="#f4f6f8" stroke-width="1.2" />
+              <line x1="50" y1="8" x2="50" y2="76" stroke="#f4f6f8" stroke-width="1.2" />
+              <g data-court-side="left" role="button" tabindex="0" aria-label="Play on the left side" class="court-dot">
+                <rect x="4" y="10" width="44" height="96" fill="transparent" />
+                <circle cx="27" cy="88" r="8" />
+                <text x="27" y="90.5" font-size="6" text-anchor="middle" font-weight="700">YOU</text>
+              </g>
+              <g data-court-side="right" role="button" tabindex="0" aria-label="Play on the right side" class="court-dot">
+                <rect x="52" y="10" width="44" height="96" fill="transparent" />
+                <circle cx="73" cy="88" r="8" />
+                <text x="73" y="90.5" font-size="6" text-anchor="middle" font-weight="700">YOU</text>
+              </g>
+            </svg>
+            <figcaption>Tap your side</figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section aria-labelledby="puzzles-heading">
+        <div class="row-between">
+          <h2 id="puzzles-heading">Puzzles</h2>
+          <p id="solved-count" class="muted small"></p>
+        </div>
+        <div id="puzzle-groups" class="groups"></div>
+        <button type="button" id="start" class="btn btn-go wide">Start</button>
+      </section>
+      <noscript><p>This app needs JavaScript to draw the 3D court.</p></noscript>
+    </main>
+
+    <div id="play" class="play" hidden>
+      <div id="stage" class="stage"></div>
+      <div id="top" class="top">
+        <header class="bar">
+          <button type="button" id="back" class="icon-btn" aria-label="Back to all puzzles">
+            <svg aria-hidden="true" viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.2"><path d="M15 6l-6 6 6 6" /></svg>
+          </button>
+          <div class="bar-title">
+            <p id="play-category" class="eyebrow"></p>
+            <h1 id="play-title"></h1>
+          </div>
+          <p id="play-count" class="muted small count"></p>
+        </header>
+        <section id="prompt" class="prompt" aria-live="polite" hidden></section>
+      </div>
+      <section id="panel" class="panel" aria-label="Answers and actions"></section>
+    </div>
+  </body>
+</html>
