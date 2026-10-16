@@ -49,11 +49,13 @@ for (const base of PUZZLES) {
   for (const p of [base, mirrorPuzzle(base)]) {
     const correct = p.options.filter((o) => o.correct).length;
     if (correct !== 1) fail(p, "options", `${correct} correct options, expected 1`);
-    if (p.options.length !== 3) fail(p, "options", `${p.options.length} options, expected 3`);
+    if (p.options.length < 2 || p.options.length > 3) fail(p, "options", `${p.options.length} options, expected 2 or 3`);
+    if (!p.lesson || !p.explanation) fail(p, "text", "missing lesson or explanation");
     checkOption(p, null);
     for (const o of p.options) checkOption(p, o);
   }
-  if (base.sources.length < (base.category === "Rules" ? 1 : 2)) fail(base, "sources", `${base.sources.length} sources`);
+  // Rules must quote the rulebook; tactics may rest on geometry alone.
+  if (base.group === "rules" && base.sources.length < 1) fail(base, "sources", "a rules puzzle needs the rule it is based on");
 }
 
 console.log(problems ? `${problems} problems` : `all ${PUZZLES.length} puzzles passed`);

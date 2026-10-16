@@ -1,5 +1,5 @@
-// Each answer is backed by the sources listed with it. Rules come from the FIP Rules of Padel
-// (review of 1 January 2026); tactics need at least two independent coaching sources that agree.
+// Rules come from the FIP Rules of Padel (review of 1 January 2026). Tactics list coaching sources
+// where we have them; the rest follow from court geometry and are explained in `explanation`.
 //
 // Shape of a puzzle (all positions in meters, see js/court.js for the axes):
 //   players: start positions of you, partner, opp1, opp2
@@ -7,7 +7,7 @@
 //   introMoves / introTags: player runs and event labels during the intro
 //   decision: { by, when } stops just before that player's hit, { at } stops at a time,
 //             null plays the intro out and asks for a judgement (rules)
-//   options: three answers; `shots` and `moves` animate what happens next
+//   options: two or three answers; `shots` and `moves` animate what happens next
 //   group: "rules", "basics" or "advanced"; lesson: the one line to remember
 const FIP_EN = "https://www.padelfip.com/wp-content/uploads/2025/12/FIP_Rules-of-Padel.pdf";
 const FIP_ES = "https://www.padelfip.com/wp-content/uploads/2025/12/FIP_Reglas-del-Padel.pdf";
@@ -1236,19 +1236,462 @@ const netLine = {
   confidence: "high",
 };
 
+const netHeight = {
+  id: "basics-net-height",
+  group: "basics",
+  category: "Consistency",
+  title: "Where is the net lowest?",
+  question: "You hit a low, flat ball. Where is it safest to pass the net?",
+  side: "right",
+  players: {
+    you: { x: 2.6, z: -8.6, stance: "back" },
+    partner: { x: -2.6, z: -8.6, stance: "back" },
+    opp1: { x: -2.4, z: 8.4, stance: "back" },
+    opp2: { x: 2.4, z: 8.4, stance: "back" },
+  },
+  intro: [{ by: "opp2", from: { x: 2.4, y: 0.9, z: 8.4 }, to: { x: 3.0, z: -5.0 }, apex: 1.8, stroke: "drive" }],
+  decision: { by: "you", when: { kind: "afterBounce", height: 0.85 } },
+  // Both shots cross the net 0.93 m high: over the middle that clears, by the side post it does not.
+  options: [
+    {
+      id: "A",
+      label: "Down the line, by the side wall",
+      marker: { x: 4.5, z: 0.4, kind: "target" },
+      correct: false,
+      result: "The net is higher at the sides. Your ball clips the net.",
+      shots: [{ by: "you", to: { x: 4.6, z: 2.5 }, velocity: { x: 2.594, y: 3.584, z: 14.774 }, stroke: "drive" }],
+    },
+    {
+      id: "B",
+      label: "Over the middle",
+      marker: { x: 0.7, z: 0.4, kind: "target" },
+      correct: true,
+      result: "It clears the lowest part of the net and dips at their feet.",
+      shots: [{ by: "you", to: { x: 0.1, z: 2.4 }, velocity: { x: -4.197, y: 3.669, z: 14.401 }, stroke: "drive", stopAfter: 1.3 }],
+    },
+    {
+      id: "C",
+      label: "Anywhere, the net is the same height",
+      correct: false,
+      result: "It is not. The net is higher at the sides, and your ball hits the net.",
+      shots: [{ by: "you", to: { x: 4.6, z: 2.5 }, velocity: { x: 2.594, y: 3.584, z: 14.774 }, stroke: "drive" }],
+    },
+  ],
+  lesson: "The net is lowest in the middle: 88 cm, against 92 cm at the sides.",
+  explanation:
+    "By the rules the net is 0.88 m high in the middle and 0.92 m at the ends. With a low ball, those 4 cm decide if it goes over. When you are not sure, pass the net through the middle.",
+  wrong: {
+    A: "By the side wall the net is 4 cm higher.",
+    C: "The net sags: it is 4 cm lower in the middle than at the sides.",
+  },
+  sources: [
+    {
+      title: "FIP Rules of Padel 2026, the net: it must be 10 meters long and",
+      url: FIP_EN,
+      kind: "quote",
+      text: "0.88 high at the center, rising to 0.92 meters at the ends",
+      lang: "en",
+    },
+  ],
+};
+
+const lobApex = {
+  id: "basics-lob-apex",
+  group: "basics",
+  category: "Defense",
+  title: "Where should your lob peak?",
+  question: "Both are at the net. You lob from the back. Where should the ball be at its highest?",
+  side: "right",
+  players: {
+    you: { x: 3.1, z: -8.6, stance: "back" },
+    partner: { x: -2.5, z: -8.0, stance: "back" },
+    opp1: { x: -2.3, z: 2.8, stance: "net" },
+    opp2: { x: 2.3, z: 2.8, stance: "net" },
+  },
+  intro: [{ by: "opp2", from: { x: 2.1, y: 1.1, z: 2.6 }, to: { x: 3.3, z: -5.6 }, apex: 2.4, stroke: "volley" }],
+  decision: { by: "you", when: { kind: "afterBounce", height: 1.0 } },
+  options: [
+    {
+      id: "A",
+      label: "Above their net players",
+      correct: false,
+      result: "It flies too far and hits their back wall before it bounces. Point lost.",
+      shots: [{ by: "you", to: { x: -0.5, z: 10 }, wallHeight: 3.3, apex: 6.3, stroke: "lob", tag: "TOP" }],
+    },
+    {
+      id: "B",
+      label: "Around the net",
+      correct: true,
+      result: "It comes down past their service line, and they must run back.",
+      shots: [{ by: "you", to: { x: -0.5, z: 8.3 }, apex: 6.0, stroke: "lob", tag: "TOP", stopAfter: 2.9 }],
+      moves: [
+        { who: "opp1", to: { x: -1.4, z: 7.0 }, at: 0.5, speed: 4.5 },
+        { who: "opp2", to: { x: 1.8, z: 7.4 }, at: 0.4, speed: 4.5 },
+        { who: "you", to: { x: 2.4, z: -4.0 }, at: 0.8, speed: 4.5 },
+        { who: "partner", to: { x: -2.4, z: -4.0 }, at: 0.85, speed: 4.5 },
+      ],
+    },
+    {
+      id: "C",
+      label: "Well before the net, on your side",
+      correct: false,
+      result: "It comes down short, and they smash it.",
+      shots: [
+        { by: "you", to: { x: -0.5, z: 2.4 }, apex: 6.0, stroke: "lob", tag: "TOP" },
+        { by: "opp1", when: { kind: "cross", z: 1.2 }, to: { x: -4.0, z: -3.4 }, speed: 21, stroke: "overhead", tag: "SMASH" },
+      ],
+    },
+  ],
+  lesson: "A lob from the back is at its highest around the net.",
+  explanation:
+    "A lob is an arch. From your back court to their back court, the top of that arch is around the net. If the top is above their net players, the ball flies past their court. If the top is on your side, it comes down short, where they can smash it.",
+  wrong: {
+    A: "With the top that far forward, the ball lands behind their court.",
+    C: "With the top on your side, the ball comes down short.",
+  },
+  sources: [],
+};
+
+const SERVE_FROM = { x: 2.2, y: 0.8, z: -7.7 };
+const FIRST_SERVE_INTO_NET = { x: -5.224, y: 3.091, z: 15.123 };
+
+const secondServe = {
+  id: "basics-second-serve",
+  group: "basics",
+  category: "Serve",
+  title: "Your second serve",
+  question: "Your first serve went into the net. How do you play the second one?",
+  side: "right",
+  players: {
+    you: { x: 2.2, z: -7.7, stance: "back" },
+    partner: { x: -2.4, z: -3.0, stance: "net" },
+    opp1: { x: -2.8, z: 8.6, stance: "back" },
+    opp2: { x: 2.4, z: 8.4, stance: "back" },
+  },
+  intro: [{ by: "you", from: SERVE_FROM, to: { x: -2.4, z: 5.6 }, velocity: FIRST_SERVE_INTO_NET, stroke: "serve", passNet: true }],
+  introTags: [{ kind: "net", text: "Fault" }],
+  decision: { at: 1.5 },
+  options: [
+    {
+      id: "A",
+      label: "The same hard, flat serve",
+      correct: false,
+      result: "Into the net again: double fault, point lost.",
+      shots: [{ by: "you", restart: true, from: SERVE_FROM, to: { x: -2.4, z: 5.6 }, velocity: FIRST_SERVE_INTO_NET, stroke: "serve" }],
+      eventTags: [{ kind: "net", text: "Double fault" }],
+    },
+    {
+      id: "B",
+      label: "Slower, higher over the net, deep",
+      correct: true,
+      result: "It goes in with room to spare, and the point starts.",
+      shots: [
+        { by: "you", restart: true, from: SERVE_FROM, to: { x: -2.2, z: 6.3 }, apex: 1.95, stroke: "serve" },
+        { by: "opp1", when: { kind: "afterGlass", height: 0.9 }, to: { x: 1.4, z: -4.9 }, apex: 1.7, stroke: "drive", stopAfter: 0.7 },
+      ],
+      moves: [{ who: "you", to: { x: 2.0, z: -4.2 }, at: 1.2, speed: 4.5 }],
+    },
+    {
+      id: "C",
+      label: "Very soft and short, just to get it in",
+      correct: false,
+      result: "It sits up short. The returner steps in and attacks it.",
+      shots: [
+        { by: "you", restart: true, from: SERVE_FROM, to: { x: -1.6, z: 2.4 }, apex: 1.5, stroke: "serve" },
+        { by: "opp1", when: { kind: "afterBounce", height: 1.0 }, to: { x: 2.0, z: -6.4 }, speed: 18, stroke: "drive" },
+      ],
+    },
+  ],
+  lesson: "Second serve: less speed, more height over the net, and still deep.",
+  explanation:
+    "A double fault gives away the point with no rally at all. On the second serve, take the risk out: hit it slower and a little higher over the net, so it clears easily, and still aim deep in the box. A very short, soft serve is not safe either: it gives the returner an easy ball to attack.",
+  wrong: {
+    A: "The same risky serve can miss again, and a second miss loses the point.",
+    C: "A short, slow serve is an easy ball for the returner.",
+  },
+  sources: [],
+};
+
+const shortBandeja = {
+  id: "defense-short-bandeja",
+  group: "basics",
+  category: "Defense",
+  title: "Slow bandeja in front of you",
+  question: "Their slow bandeja will bounce before your service line. You are at the back. What do you do?",
+  side: "right",
+  players: {
+    you: { x: 2.4, z: -8.6, stance: "back" },
+    partner: { x: -2.5, z: -8.4, stance: "back" },
+    opp1: { x: -2.3, z: 3.2, stance: "net" },
+    opp2: { x: 2.2, z: 4.6, stance: "net" },
+  },
+  intro: [{ by: "opp2", from: { x: 2.0, y: 2.6, z: 4.6 }, to: { x: 2.6, z: -5.4 }, speed: 10, stroke: "overhead", tag: "BANDEJA" }],
+  decision: { at: 0.75 },
+  options: [
+    {
+      id: "A",
+      label: "Wait and play it off the glass",
+      correct: false,
+      result: "It barely reaches the glass and dies there. Point lost.",
+      shots: [],
+      eventTags: [{ kind: "glass", text: "Too low to play" }],
+    },
+    {
+      id: "B",
+      label: "Step in and take it before the glass",
+      correct: true,
+      result: "You get to it in time and keep it low over the net.",
+      shots: [{ by: "you", when: { kind: "onRise", height: 0.6 }, to: { x: 0.2, z: 4.2 }, apex: 1.45, stroke: "drive", stopAfter: 1.2 }],
+      moves: [{ who: "you", to: { x: 2.6, z: -7.2 }, at: 0, speed: 4 }],
+    },
+  ],
+  lesson: "Slow ball bounces before your service line? Go forward to it.",
+  explanation:
+    "A slow ball that bounces before your service line has little speed left. It reaches the glass low and dies there, or it does not reach the glass at all. Move forward and play it after the bounce. Wait for the glass when the ball bounces past your service line with some pace.",
+  wrong: {
+    A: "A slow, short ball dies at the glass. There is nothing to play.",
+  },
+  sources: [
+    {
+      title: "Padel Magazine: avant ou après la vitre ?",
+      url: "https://padelmagazine.fr/avant-ou-apres-la-vitre/",
+      kind: "summary",
+      text: "Let a ball that bounces behind the service line pass to the glass, unless it is very low or very slow: then the rebound off the glass is too low to play well.",
+      lang: "fr",
+    },
+  ],
+};
+
+const partnerReturnsMiddle = {
+  id: "positioning-return-middle",
+  group: "basics",
+  category: "Positioning",
+  title: "Serve to the middle: where do you stand?",
+  question: "They serve to the middle, and your partner returns it from there. Where do you stand?",
+  side: "right",
+  players: {
+    you: { x: 0.6, z: -7.0, stance: "back" },
+    partner: { x: -2.4, z: -8.6, stance: "back" },
+    opp1: { x: -2.3, z: 3.0, stance: "net" },
+    opp2: { x: 1.9, z: 7.8, stance: "back" },
+  },
+  intro: [{ by: "opp2", from: { x: 1.9, y: 0.8, z: 7.8 }, to: { x: -0.4, z: -6.4 }, apex: 1.55, stroke: "serve", tag: "SERVE TO THE MIDDLE" }],
+  introMoves: [{ who: "partner", to: { x: -1.2, z: -8.6 }, at: 0.2, speed: 3.5 }],
+  decision: { at: 0.95 },
+  options: [
+    {
+      id: "A",
+      label: "Stay in the middle, near your partner",
+      correct: false,
+      result: "Your corner is empty, and their net player volleys straight into it.",
+      shots: [
+        { by: "partner", when: { kind: "afterBounce", height: 0.85 }, to: { x: 0.4, z: 5.8 }, apex: 1.7, stroke: "drive" },
+        { by: "opp1", when: { kind: "cross", z: 2.8 }, to: { x: 3.4, z: -6.6 }, speed: 15, stroke: "volley" },
+      ],
+    },
+    {
+      id: "B",
+      label: "Go back and cover your corner",
+      correct: true,
+      result: "Their volley into your corner comes right to you.",
+      shots: [
+        { by: "partner", when: { kind: "afterBounce", height: 0.85 }, to: { x: 0.4, z: 5.8 }, apex: 1.7, stroke: "drive" },
+        { by: "opp1", when: { kind: "cross", z: 2.8 }, to: { x: 3.4, z: -6.6 }, speed: 15, stroke: "volley" },
+        { by: "you", when: { kind: "onRise", height: 0.5 }, to: { x: 0.2, z: 4.2 }, apex: 1.5, stroke: "drive", stopAfter: 1.2 },
+      ],
+      moves: [{ who: "you", to: { x: 2.7, z: -8.6 }, at: 0, speed: 3.5 }],
+    },
+  ],
+  lesson: "Your partner takes the middle ball? You keep your corner covered.",
+  explanation:
+    "When the serve goes to the middle, your partner moves there to return it. If you move to the middle too, your whole side is empty, and their net player can volley into your corner. Stay back on your side, so the space they aim at is covered.",
+  wrong: {
+    A: "Two players in the middle leave a corner empty.",
+  },
+  sources: [],
+};
+
+const chiquitaLine = {
+  id: "attack-chiquita-line",
+  group: "advanced",
+  category: "Attack",
+  title: "Chiquita: down the line or cross?",
+  question: "Both are at the net. You want to play a chiquita at their feet. Which one is easier to play well?",
+  side: "right",
+  players: {
+    you: { x: 2.5, z: -8.0, stance: "back" },
+    partner: { x: -2.5, z: -8.0, stance: "back" },
+    opp1: { x: -2.3, z: 3.2, stance: "net" },
+    opp2: { x: 2.3, z: 3.2, stance: "net" },
+  },
+  intro: [{ by: "opp2", from: { x: 2.3, y: 1.0, z: 3.2 }, to: { x: 2.5, z: -5.8 }, apex: 1.7, stroke: "volley" }],
+  decision: { by: "you", when: { kind: "afterBounce", height: 0.9 } },
+  options: [
+    {
+      id: "A",
+      label: "Down the line, to the player in front of you",
+      marker: { x: 2.3, z: 2.2, kind: "target" },
+      correct: true,
+      result: "It is short and easy to control. He lifts it, and you volley it away.",
+      shots: [
+        { by: "you", to: { x: 2.3, z: 2.2 }, apex: 1.55, stroke: "drive", tag: "CHIQUITA" },
+        { by: "opp2", when: { kind: "cross", z: 2.7 }, to: { x: 1.4, z: -4.6 }, apex: 2.5, stroke: "volley" },
+        { by: "you", when: { kind: "cross", z: -3.4 }, to: { x: -4.1, z: 3.0 }, speed: 12, stroke: "volley" },
+      ],
+      moves: [
+        { who: "you", to: { x: 2.2, z: -3.6 }, at: 0.25, speed: 4.5 },
+        { who: "partner", to: { x: -2.2, z: -3.6 }, at: 0.3, speed: 4.5 },
+      ],
+    },
+    {
+      id: "B",
+      label: "Crosscourt, to the far player",
+      marker: { x: -2.2, z: 3.3, kind: "target" },
+      correct: false,
+      result: "The long flight gives him time. He steps in and volleys it away.",
+      shots: [
+        { by: "you", to: { x: -2.2, z: 3.3 }, apex: 1.55, stroke: "drive", tag: "CHIQUITA" },
+        { by: "opp1", when: { kind: "cross", z: 1.3 }, to: { x: 4.1, z: -3.2 }, apex: 1.5, stroke: "volley" },
+      ],
+      moves: [
+        { who: "you", to: { x: 2.2, z: -4.6 }, at: 0.25, speed: 4.5 },
+        { who: "partner", to: { x: -2.2, z: -4.6 }, at: 0.3, speed: 4.5 },
+      ],
+    },
+  ],
+  lesson: "Chiquita: the short way, down the line, is easier to control.",
+  explanation:
+    "A chiquita down the line travels the shortest distance, so its length is easier to control and there is less room for a mistake. Crosscourt the ball travels much farther: it is harder to land at their feet, and the far player has more time to step in and volley it.",
+  wrong: {
+    B: "A longer flight is harder to control and gives him more time.",
+  },
+  sources: [],
+};
+
+const chiquitaLength = {
+  id: "attack-chiquita-length",
+  group: "advanced",
+  category: "Attack",
+  title: "Chiquita: miss short or long?",
+  question: "You go for a chiquita, but it may not come out perfect. Which miss is better?",
+  side: "right",
+  players: {
+    you: { x: 2.5, z: -8.0, stance: "back" },
+    partner: { x: -2.5, z: -8.0, stance: "back" },
+    opp1: { x: -2.3, z: 3.2, stance: "net" },
+    opp2: { x: 2.3, z: 3.2, stance: "net" },
+  },
+  intro: [{ by: "opp2", from: { x: 2.3, y: 1.0, z: 3.2 }, to: { x: 2.5, z: -5.8 }, apex: 1.7, stroke: "volley" }],
+  decision: { by: "you", when: { kind: "afterBounce", height: 0.9 } },
+  options: [
+    {
+      id: "A",
+      label: "A bit short, in front of their feet",
+      marker: { x: 2.3, z: 1.7, kind: "target" },
+      correct: true,
+      result: "It bounces before him. He must lift it from the ground, and you volley it away.",
+      shots: [
+        { by: "you", to: { x: 2.3, z: 1.7 }, apex: 1.7, stroke: "drive", tag: "CHIQUITA" },
+        { by: "opp2", when: { kind: "cross", z: 2.7 }, to: { x: 1.4, z: -4.6 }, apex: 2.5, stroke: "volley" },
+        { by: "you", when: { kind: "cross", z: -3.4 }, to: { x: -4.1, z: 3.0 }, speed: 12, stroke: "volley" },
+      ],
+      moves: [
+        { who: "you", to: { x: 2.2, z: -3.6 }, at: 0.25, speed: 4.5 },
+        { who: "partner", to: { x: -2.2, z: -3.6 }, at: 0.3, speed: 4.5 },
+      ],
+    },
+    {
+      id: "B",
+      label: "A bit long, past their feet",
+      marker: { x: 2.3, z: 4.8, kind: "target" },
+      correct: false,
+      result: "It reaches him above the net, and he volleys it away.",
+      shots: [
+        { by: "you", to: { x: 2.3, z: 4.8 }, apex: 1.95, stroke: "drive", tag: "CHIQUITA" },
+        { by: "opp2", when: { kind: "cross", z: 3.0 }, to: { x: -4.1, z: -3.2 }, apex: 1.5, stroke: "volley" },
+      ],
+      moves: [
+        { who: "you", to: { x: 2.2, z: -4.6 }, at: 0.25, speed: 4.5 },
+        { who: "partner", to: { x: -2.2, z: -4.6 }, at: 0.3, speed: 4.5 },
+      ],
+    },
+  ],
+  lesson: "A chiquita must make them hit up. A short one still does, a long one does not.",
+  explanation:
+    "The chiquita works because they must hit the ball up from below the net. A ball that lands a little short still does that: they have to dig it up after the bounce. A ball that goes a little long reaches them at net height or above, and that is an easy volley.",
+  wrong: {
+    B: "Long, the ball meets his racket above the net. That is an easy volley.",
+  },
+  sources: [],
+};
+
+const readCrosscourt = {
+  id: "attack-they-read-cross",
+  group: "advanced",
+  category: "Attack",
+  title: "They read your crosscourt",
+  question: "All your balls went crosscourt. Now the player in front of you moves to the middle to cut them off. Where do you play?",
+  side: "right",
+  players: {
+    you: { x: 2.6, z: -8.4, stance: "back" },
+    partner: { x: -2.6, z: -8.4, stance: "back" },
+    opp1: { x: -2.4, z: 3.2, stance: "net" },
+    opp2: { x: 2.4, z: 3.2, stance: "net" },
+  },
+  intro: [{ by: "opp1", from: { x: -2.4, y: 1.0, z: 3.2 }, to: { x: 2.8, z: -6.0 }, apex: 1.8, stroke: "volley" }],
+  introMoves: [{ who: "opp2", to: { x: 0.7, z: 3.0 }, at: 0.35, speed: 3 }],
+  decision: { by: "you", when: { kind: "afterBounce", height: 0.9 } },
+  options: [
+    {
+      id: "A",
+      label: "Crosscourt again",
+      marker: { x: -1.4, z: 5.6, kind: "target" },
+      correct: false,
+      result: "He was waiting for it and volleys it away.",
+      shots: [
+        { by: "you", to: { x: -1.4, z: 5.6 }, apex: 1.5, stroke: "drive" },
+        { by: "opp2", when: { kind: "cross", z: 2.9 }, to: { x: 4.1, z: -3.2 }, apex: 1.5, stroke: "volley" },
+      ],
+    },
+    {
+      id: "B",
+      label: "Down the line, past him",
+      marker: { x: 4.2, z: 6.4, kind: "target" },
+      correct: true,
+      result: "He left his line open, so you pass him.",
+      shots: [{ by: "you", to: { x: 4.2, z: 6.4 }, apex: 1.4, stroke: "drive", tag: "DOWN THE LINE" }],
+    },
+  ],
+  lesson: "The net player leaves his line to cut the middle? Go down the line.",
+  explanation:
+    "Crosscourt is usually the safer choice, so good net players move toward the middle to take it. When the player in front of you leaves his line, the space down the line is open. Watch him before you hit, and play into the space he left.",
+  wrong: {
+    A: "He moved there to take exactly that ball.",
+  },
+  sources: [],
+};
+
 // In play order: rules, then basics, then advanced.
 export const PUZZLES = [
   serveIntoFence,
   ownBackGlass,
   serveToNet,
+  secondServe,
+  netHeight,
   lobDepth,
+  lobApex,
   afterTheLob,
   kneeBallToGlass,
+  shortBandeja,
   lowOrLob,
   smashDefense,
   partnerWide,
+  partnerReturnsMiddle,
   chiquita,
+  chiquitaLine,
+  chiquitaLength,
   returnRusher,
+  readCrosscourt,
   deepLobBandeja,
   shortLobSmash,
   netLine,

@@ -168,8 +168,26 @@ export function buildTimeline(puzzle, choice, hand) {
       ? planWallShot(from, shot.to, shot.wallHeight, shot.apex ?? 5, simOpts)
       : planShot(launch, simOpts);
     const next = steps[i + 1];
-    if (!next) {
+    // A new ball, like a second serve: play this one out, then start again from the next shot's `from`.
+    if (next?.restart) {
       const cut = rallyEnd(path.events, path.duration);
+      const done = truncatePath(path, Math.max(0, path.samples.findIndex((s) => s.t >= cut)));
+      pushSamples(done.samples, t);
+      done.events.forEach((e) => tl.events.push({ ...e, t: e.t + t }));
+      addTag(tl, shot, done.samples, t);
+      applyMoves(t + done.duration);
+      t += done.duration + (next.pause ?? 0.6);
+      const server = players[next.by];
+      moveTo(server, t - 0.5, next.from, t - 0.05);
+      from = { ...next.from };
+      // The old ball stays where it stopped; the new one appears in the server's hand.
+      tl.ball.push({ t: t - 0.02, p: tl.ball[tl.ball.length - 1].p }, { t: t - 0.01, p: from });
+      server.swings.push({ t, style: next.stroke, side: sideFor(server, from) });
+      continue;
+    }
+    if (!next) {
+      // `stopAfter` ends the replay while the ball is still in play, when the point itself does not matter.
+      const cut = Math.min(rallyEnd(path.events, path.duration), shot.stopAfter ?? Infinity);
       const done = truncatePath(path, Math.max(0, path.samples.findIndex((s) => s.t >= cut)));
       pushSamples(done.samples, t);
       done.events.forEach((e) => tl.events.push({ ...e, t: e.t + t }));

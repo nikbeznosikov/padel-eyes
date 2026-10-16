@@ -216,7 +216,7 @@ function render() {
     const onCourt = puzzle.options.some((o) => o.marker?.kind === "target");
     prompt.hidden = false;
     prompt.innerHTML = `<h2 class="question">${text(puzzle.question)}</h2>
-      ${phase === "question" ? `<p class="hint">${onCourt ? "A, B and C are marked on the court. " : ""}Drag to look around.</p>` : ""}`;
+      ${phase === "question" ? `<p class="hint">${onCourt ? "The letters on the court show where each shot goes. " : ""}Drag to look around.</p>` : ""}`;
     panel.innerHTML = `<ul class="options">${puzzle.options
       .map((o) => {
         const chosen = picked?.id === o.id;
@@ -229,6 +229,7 @@ function render() {
     return;
   }
   const correct = puzzle.options.find((o) => o.correct);
+  const sourced = puzzle.sources.length > 0;
   prompt.hidden = false;
   prompt.innerHTML = `<p class="verdict ${picked.correct ? "good" : "bad"}">${picked.correct ? "Right call" : "Not the best choice"}</p>
     <p class="result-line">${text(picked.result)}</p>
@@ -241,16 +242,16 @@ function render() {
       <button type="button" class="btn ${picked.correct ? "btn-go" : "btn-soft"} push" data-action="next">Next</button>
     </div>
     <details class="sources">
-      <summary>${picked.correct ? "Why, and sources" : `Show the answer (${correct.id}), and sources`}</summary>
+      <summary>${picked.correct ? `Why${sourced ? ", and sources" : ""}` : `Show the answer (${correct.id})${sourced ? ", and sources" : ""}`}</summary>
       ${!picked.correct ? `<p class="body"><strong>${correct.id}: ${text(correct.label)}.</strong> ${text(puzzle.lesson)}</p>` : ""}
       <p class="body">${text(puzzle.explanation)}</p>
-      <ul>${puzzle.sources
+      ${sourced ? `<ul>${puzzle.sources
         .map(
           (s) => `<li><a href="${esc(s.url)}" target="_blank" rel="noopener noreferrer">${esc(s.title)}</a>
           <span class="lang">(${esc(s.lang)})</span>
           <p class="source-text">${s.kind === "quote" ? `<q>${esc(s.text)}</q>` : `Says: ${esc(s.text)}`}</p></li>`,
         )
-        .join("")}</ul>
+        .join("")}</ul>` : ""}
     </details>
   </div>`;
 }
