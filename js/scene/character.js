@@ -217,13 +217,14 @@ export class Character {
   /** Set the racket in the hand so that, in the ready position, its head points up and a little forward. */
   grip() {
     const hand = this.bones.hand_r;
-    const handQ = hand.getWorldQuaternion(new THREE.Quaternion());
     const y = this.worldDir(d(-0.1, 0.5, 0.86));
     const face = this.worldDir(F);
     const z = face.sub(y.clone().multiplyScalar(face.dot(y))).normalize();
     const x = new THREE.Vector3().crossVectors(y, z);
-    const world = new THREE.Quaternion().setFromRotationMatrix(new THREE.Matrix4().makeBasis(x, y, z));
-    this.racket.quaternion.copy(handQ.invert().multiply(world));
+    // The racket's axes in the hand's frame. In a mirrored (left-handed) hand, flip its width axis back: the racket is symmetric.
+    const local = hand.matrixWorld.clone().invert().multiply(new THREE.Matrix4().makeBasis(x, y, z));
+    if (local.determinant() < 0) local.multiply(new THREE.Matrix4().makeScale(-1, 1, 1));
+    this.racket.quaternion.setFromRotationMatrix(local);
     // Hold the handle in the palm, a little below the end of the grip.
     const along = new THREE.Vector3(0, 1, 0).applyQuaternion(this.racket.quaternion);
     this.racket.position.set(0, 0.085, 0.02).addScaledVector(along, -0.07);
@@ -328,7 +329,8 @@ export class Character {
       weight = 1 - ease((k - 0.28) / 0.47);
     }
     const mix = (key) => a[key].clone().lerp(b[key], u).normalize();
-    const twist = THREE.MathUtils.lerp(a.twist, b.twist, u) * weight;
+    // A mirrored (left-handed) body turns its chest the other way.
+    const twist = THREE.MathUtils.lerp(a.twist, b.twist, u) * weight * Math.sign(this.body.scale.x);
 
     // Chest turn around the body's up axis, split over the spine.
     for (const n of ["spine_01", "spine_02", "spine_03"]) {
@@ -355,14 +357,15 @@ export class Character {
 const _a = new THREE.Vector3();
 const _b = new THREE.Vector3();
 const _q1 = new THREE.Quaternion();
-const _q2 = new THREE.Quaternion();
+const _m1 = new THREE.Matrix4();
+const _m2 = new THREE.Matrix4();
 
 /** Apply a world-space rotation to a bone, keeping its parent. */
 function rotateBoneWorld(bone, q) {
-  bone.getWorldQuaternion(_q2);
-  const world = q.clone().multiply(_q2);
-  bone.parent.getWorldQuaternion(_q1);
-  bone.quaternion.copy(_q1.invert().multiply(world));
+  // The same turn seen from the parent is P^-1 * q * P; this stays right when a left-handed body is mirrored.
+  const parent = bone.parent.matrixWorld;
+  _m1.copy(parent).invert().multiply(_m2.makeRotationFromQuaternion(q)).multiply(parent);
+  bone.quaternion.premultiply(_q1.setFromRotationMatrix(_m1));
   bone.updateMatrixWorld(true);
 }
 
