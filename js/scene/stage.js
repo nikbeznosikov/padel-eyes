@@ -8,6 +8,8 @@ import { Markers, Tags } from "./markers.js";
 import { Player } from "./player.js";
 import { buildRacket } from "./racket.js";
 
+const UP = new THREE.Vector3(0, 1, 0);
+
 const OUTFITS = {
   you: { shirt: "#f4f4f4", shorts: "#1f2a3a", skin: "#d2a07c", hair: "#3a2a1c", band: "#2563eb", rim: "#e8c547" },
   partner: { shirt: "#f4f4f4", shorts: "#1f2a3a", skin: "#c48f6a", hair: "#1e1611", band: "#2563eb", rim: "#60a5fa" },
@@ -205,7 +207,8 @@ export class Stage {
           p.root.visible = this.mode === "overview";
         }
       }
-      p.update(t, dt);
+      // A paused point is a still frame: bodies stop mid-stride instead of jogging on the spot.
+      p.update(t, this.clock.playing ? dt : 0);
     }
     this.ball.update(this.timeline, t, this.camera);
     this.tags.update(t, dt);
@@ -238,6 +241,7 @@ export class Stage {
       g.pitch *= f;
     }
 
+    const jump = Math.abs(t - this.lastT) > 0.5 || this.look === null;
     const you = posAt(this.timeline.players.you, t);
     const b = ballAt(this.timeline, t);
     const ball = new THREE.Vector3(b.x, b.y, -b.z);
@@ -254,17 +258,27 @@ export class Stage {
       // With a real body, the eyes are where the model's eyes are, so looking down shows your own chest and legs.
       const me = this.players?.find((p) => p.id === "you");
       if (me?.bones) {
-        const fwd = new THREE.Vector3(Math.sin(me.root.rotation.y), 0, Math.cos(me.root.rotation.y));
-        pos = me.bones.neck_01.getWorldPosition(new THREE.Vector3()).add(fwd.multiplyScalar(0.09)).add(new THREE.Vector3(0, 0.16, 0));
+        const yawNow = me.root.rotation.y;
+        const fwd = new THREE.Vector3(Math.sin(yawNow), 0, Math.cos(yawNow));
+        // Follow the body's lean but not every running step, or the view shakes with the stride.
+        const neck = me.bones.neck_01.getWorldPosition(new THREE.Vector3()).sub(me.root.position).applyAxisAngle(UP, -yawNow);
+        if (jump || !this.neckLean) this.neckLean = neck;
+        else this.neckLean.lerp(neck, 1 - Math.exp(-dt * 3));
+        pos = this.neckLean.clone().applyAxisAngle(UP, yawNow).add(me.root.position).add(fwd.multiplyScalar(0.09)).add(new THREE.Vector3(0, 0.16, 0));
       }
       // Your eyes stay on the ball wherever it goes: past you, behind you or down at your feet.
+      // Turn towards it from where you stand, not from the eyes: the eyes move as the body turns, and the two chased each other.
+      const fromX = ball.x - you.x;
+      const fromZ = ball.z + you.z;
+      // With the ball right at your feet or in your hand, keep facing where you were (at the start, the net).
+      if (Math.hypot(fromX, fromZ) > 0.4) this.eyeYaw = Math.atan2(fromX, -fromZ);
+      else if (jump || this.eyeYaw == null) this.eyeYaw = 0;
       const dir = ball.clone().sub(pos);
       const flat = Math.hypot(dir.x, dir.z);
-      const yaw = Math.atan2(dir.x, -dir.z) + g.yaw;
+      const yaw = this.eyeYaw + g.yaw;
       const pitch = THREE.MathUtils.clamp(Math.atan2(dir.y, Math.max(0.15, flat)) + g.pitch, -1.4, 1.4);
       target = pos.clone().add(new THREE.Vector3(Math.sin(yaw) * Math.cos(pitch), Math.sin(pitch), -Math.cos(yaw) * Math.cos(pitch)).multiplyScalar(6));
     }
-    const jump = Math.abs(t - this.lastT) > 0.5 || this.look === null;
     this.lastT = t;
     cam.position.lerp(pos, jump ? 1 : 1 - Math.exp(-dt * (this.mode === "eyes" || dragging ? 14 : 3)));
     // Turn the head smoothly by rotation, so even a half turn round goes the short way without a jolt.
