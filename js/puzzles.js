@@ -1671,11 +1671,257 @@ const readCrosscourt = {
   sources: [],
 };
 
+const letItGo = {
+  id: "rules-let-it-go",
+  group: "rules",
+  category: "Rules",
+  title: "Their ball is going out",
+  question: "Their high ball is too long: it will hit your back glass without bouncing. What do you do?",
+  side: "right",
+  players: {
+    you: { x: 2.3, z: -7.4, stance: "back" },
+    partner: { x: -2.5, z: -7.8, stance: "back" },
+    opp1: { x: -2.4, z: 8.4, stance: "back" },
+    opp2: { x: 2.4, z: 8.6, stance: "back" },
+  },
+  intro: [{ by: "opp1", from: { x: -2.4, y: 0.8, z: 8.4 }, to: { x: 2.4, z: -10 }, wallHeight: 1.7, apex: 4.4, stroke: "lob", tag: "TOO LONG", stopAfter: 2.0 }],
+  decision: { at: 1.0 },
+  options: [
+    {
+      id: "A",
+      label: "Hit it before it reaches the glass",
+      correct: false,
+      result: "You touched it, so their shot counts, and the point goes on.",
+      shots: [{ by: "you", when: { kind: "cross", z: -8.6 }, to: { x: -1.0, z: 6.5 }, speed: 12, stroke: "overhead", stopAfter: 0.9 }],
+    },
+    {
+      id: "B",
+      label: "Let it hit your glass",
+      correct: true,
+      result: "It hits your glass before it bounces. Point to you.",
+      shots: [],
+      eventTags: [{ kind: "glass", text: "No bounce: your point" }],
+    },
+  ],
+  lesson: "A ball that will hit your wall without bouncing is their mistake. Let it go.",
+  explanation:
+    "A ball must bounce in your court before it touches your walls or fence. If it hits your glass first, the player who hit it loses the point. But once you touch it in the air, it counts as a good return, and you have to play on. So when a ball is clearly going long, step aside and let it hit the glass.",
+  wrong: {
+    A: "Touching the ball in the air makes their shot a good return.",
+  },
+  sources: [
+    {
+      title: "FIP Rules of Padel 2026, Rule 13.1(g): a player loses the point if their return",
+      url: FIP_EN,
+      kind: "quote",
+      text: "without bouncing first it hits the walls of the opponents court",
+      lang: "en",
+    },
+    {
+      title: "FIP Rules of Padel 2026, Rule 14.1(a): the return is correct if",
+      url: FIP_EN,
+      kind: "quote",
+      text: "After being hit the ball is volleyed by either one of the opposing team",
+      lang: "en",
+    },
+  ],
+};
+
+const dropShotPartner = {
+  id: "positioning-partner-drop-shot",
+  group: "basics",
+  category: "Positioning",
+  title: "Your partner chases a drop shot",
+  question: "You are both at the back. They play a drop shot, and your partner runs in to dig it out. Where do you go?",
+  side: "right",
+  players: {
+    you: { x: 2.5, z: -8.2, stance: "back" },
+    partner: { x: -2.5, z: -8.2, stance: "back" },
+    opp1: { x: -2.2, z: 2.8, stance: "net" },
+    opp2: { x: 2.2, z: 3.0, stance: "net" },
+  },
+  intro: [{ by: "opp1", from: { x: -2.2, y: 1.0, z: 2.8 }, to: { x: -2.2, z: -1.8 }, apex: 1.25, stroke: "volley", tag: "DROP SHOT" }],
+  introMoves: [{ who: "partner", to: { x: -2.1, z: -4.4 }, at: 0.15, speed: 5.5 }],
+  decision: { at: 0.55 },
+  options: [
+    {
+      id: "A",
+      label: "Run up to the net with your partner",
+      correct: false,
+      result: "Their answer goes deep behind you, and nobody is there.",
+      shots: [
+        { by: "partner", when: { kind: "afterBounce", height: 0.3 }, to: { x: 0.6, z: 4.2 }, apex: 3.6, stroke: "lob" },
+        { by: "opp2", when: { kind: "cross", z: 2.2 }, to: { x: 3.4, z: -8.2 }, speed: 15, stroke: "overhead" },
+      ],
+      moves: [{ who: "you", to: { x: 2.2, z: -3.6 }, at: 0, speed: 4.5 }],
+    },
+    {
+      id: "B",
+      label: "Stay back and cover the back court",
+      correct: true,
+      result: "Their attack comes to you at the back, and you can defend it.",
+      shots: [
+        { by: "partner", when: { kind: "afterBounce", height: 0.3 }, to: { x: 0.6, z: 4.2 }, apex: 3.6, stroke: "lob" },
+        { by: "opp2", when: { kind: "cross", z: 2.2 }, to: { x: 3.4, z: -8.2 }, speed: 15, stroke: "overhead" },
+        { by: "you", when: { kind: "afterGlass", height: 1.0 }, to: { x: -0.8, z: 8.2 }, apex: 6.0, stroke: "lob", tag: "LOB" },
+      ],
+      moves: [{ who: "you", to: { x: 1.4, z: -8.0 }, at: 0, speed: 3 }],
+    },
+  ],
+  lesson: "Your partner digs out a drop shot? Their attack is coming: stay back and defend.",
+  explanation:
+    "A ball dug up from near the floor is usually weak and high, so the players at the net will attack it. If you run in too, the whole back court is empty. Stay back and cover it, and let your partner come back after the dig.",
+  wrong: {
+    A: "The dig is weak, so they attack, and with you both forward the back court is empty.",
+  },
+  sources: [],
+};
+
+const SERVE_SPOT = { x: 2.5, y: 0.8, z: -7.7 };
+
+const serveWide = {
+  id: "serve-wide-move",
+  group: "basics",
+  category: "Serve",
+  title: "Serve to the side glass: then where?",
+  question: "You serve wide into their side glass and run to the net. Where do you stop?",
+  side: "right",
+  players: {
+    you: { x: 2.5, z: -7.7, stance: "back" },
+    partner: { x: -2.4, z: -3.0, stance: "net" },
+    opp1: { x: -3.0, z: 8.4, stance: "back" },
+    opp2: { x: 2.3, z: 3.0, stance: "net" },
+  },
+  intro: [{ by: "you", from: SERVE_SPOT, to: { x: -3.6, z: 5.4 }, apex: 1.55, stroke: "serve", tag: "SERVE TO THE SIDE GLASS" }],
+  decision: { at: 0.45 },
+  options: [
+    {
+      id: "A",
+      label: "In the middle of the court",
+      correct: true,
+      result: "From out wide his best return is down the middle, and you are there.",
+      shots: [
+        { by: "opp1", when: { kind: "afterGlass", height: 0.85 }, to: { x: 0.5, z: -5.0 }, speed: 15, stroke: "drive" },
+        { by: "you", when: { kind: "cross", z: -3.6 }, to: { x: -4.1, z: 3.2 }, speed: 12, stroke: "volley" },
+      ],
+      moves: [{ who: "you", to: { x: 0.8, z: -3.6 }, at: 0, speed: 4.6 }],
+    },
+    {
+      id: "B",
+      label: "In the middle of your own half",
+      correct: false,
+      result: "The middle is open, and his return goes right through it.",
+      shots: [{ by: "opp1", when: { kind: "afterGlass", height: 0.85 }, to: { x: 0.5, z: -5.0 }, speed: 15, stroke: "drive" }],
+      moves: [{ who: "you", to: { x: 2.4, z: -3.6 }, at: 0, speed: 4.6 }],
+    },
+  ],
+  lesson: "Serve wide, then cover the middle. The angle to your side line is the hard one for him.",
+  explanation:
+    "A serve into the side glass pulls the returner out wide. From there his easy return is down the middle, while the sharp angle to your side line is hard and risky for him. So after a wide serve, stop in the middle at the net, and your partner covers his side.",
+  wrong: {
+    B: "From your own half you leave the middle, his easiest shot, open.",
+  },
+  sources: [],
+};
+
+const serveT = {
+  id: "serve-t-move",
+  group: "basics",
+  category: "Serve",
+  title: "Serve to the T: then where?",
+  question: "You serve to the T, down the middle, and run to the net. Where do you stop?",
+  side: "right",
+  players: {
+    you: { x: 2.5, z: -7.7, stance: "back" },
+    partner: { x: -2.4, z: -3.0, stance: "net" },
+    opp1: { x: -1.4, z: 8.4, stance: "back" },
+    opp2: { x: 2.3, z: 3.0, stance: "net" },
+  },
+  intro: [{ by: "you", from: SERVE_SPOT, to: { x: -0.4, z: 6.4 }, apex: 1.6, stroke: "serve", tag: "SERVE TO THE T" }],
+  decision: { at: 0.45 },
+  options: [
+    {
+      id: "A",
+      label: "In the middle of the court, by the centre line",
+      correct: false,
+      result: "Your side line is open, and his return goes down it.",
+      shots: [{ by: "opp1", when: { kind: "afterBounce", height: 0.85 }, to: { x: 4.0, z: -5.4 }, speed: 15, stroke: "drive" }],
+      moves: [{ who: "you", to: { x: 0.5, z: -3.4 }, at: 0, speed: 4.6 }],
+    },
+    {
+      id: "B",
+      label: "In the middle of your own half",
+      correct: true,
+      result: "His return to your side comes right to you.",
+      shots: [
+        { by: "opp1", when: { kind: "afterBounce", height: 0.85 }, to: { x: 4.0, z: -5.4 }, speed: 15, stroke: "drive" },
+        { by: "you", when: { kind: "cross", z: -4.0 }, to: { x: -4.1, z: 3.2 }, speed: 12, stroke: "volley" },
+      ],
+      moves: [{ who: "you", to: { x: 2.6, z: -4.0 }, at: 0, speed: 4.6 }],
+    },
+  ],
+  lesson: "Serve to the T, then cover your own half.",
+  explanation:
+    "From the middle of the court the returner can go to either side, so you and your partner each cover your own half. Stop in the middle of your half at the net, a little back. If you drift to the centre line, your side line is open.",
+  wrong: {
+    A: "From the middle he can hit either side, and you have left yours open.",
+  },
+  sources: [],
+};
+
+const dropWhenDeep = {
+  id: "net-drop-volley",
+  group: "advanced",
+  category: "Net play",
+  title: "Both are stuck at their back glass",
+  question: "You are at the net. Both of them are pinned at their back glass, and an easy ball comes to you. What do you play?",
+  side: "right",
+  players: {
+    you: { x: 2.3, z: -3.0, stance: "net" },
+    partner: { x: -2.3, z: -3.0, stance: "net" },
+    opp1: { x: -2.4, z: 9.1, stance: "back" },
+    opp2: { x: 2.6, z: 9.2, stance: "back" },
+  },
+  intro: [{ by: "opp2", from: { x: 2.6, y: 0.9, z: 9.2 }, to: { x: 2.0, z: -5.0 }, apex: 2.4, stroke: "drive" }],
+  decision: { by: "you", when: { kind: "cross", z: -3.2 } },
+  options: [
+    {
+      id: "A",
+      label: "A hard volley deep into their glass",
+      marker: { x: -1.0, z: 8.6, kind: "target" },
+      correct: false,
+      result: "It comes off their glass at a good height, and they lob you.",
+      shots: [
+        { by: "you", to: { x: -1.0, z: 8.6 }, speed: 15, stroke: "volley" },
+        { by: "opp1", when: { kind: "afterGlass", height: 1.0 }, to: { x: 1.0, z: -8.2 }, apex: 6.0, stroke: "lob", tag: "LOB" },
+      ],
+    },
+    {
+      id: "B",
+      label: "A soft drop volley, just over the net",
+      marker: { x: -2.8, z: 0.8, kind: "target" },
+      correct: true,
+      result: "It dies near the net. They are much too far away to reach it.",
+      shots: [{ by: "you", to: { x: -2.8, z: 0.8 }, apex: 1.7, stroke: "volley", tag: "DROP VOLLEY" }],
+    },
+  ],
+  lesson: "Opponents pinned at the back glass? Play short. Hard and deep only gives them the glass.",
+  explanation:
+    "When both opponents are deep at their back glass, the space near the net is empty and they need a long run to reach it. A soft drop volley that dies there is the right ball. A hard ball deep into their glass comes back off the glass and gives them time for a good shot.",
+  wrong: {
+    A: "A hard ball into their glass comes back off it with pace, and they have time.",
+  },
+  sources: [],
+};
+
 // In play order: rules, then basics, then advanced.
 export const PUZZLES = [
   serveIntoFence,
   ownBackGlass,
+  letItGo,
   serveToNet,
+  serveWide,
+  serveT,
   secondServe,
   netHeight,
   lobDepth,
@@ -1687,6 +1933,7 @@ export const PUZZLES = [
   smashDefense,
   partnerWide,
   partnerReturnsMiddle,
+  dropShotPartner,
   chiquita,
   chiquitaLine,
   chiquitaLength,
@@ -1694,5 +1941,6 @@ export const PUZZLES = [
   readCrosscourt,
   deepLobBandeja,
   shortLobSmash,
+  dropWhenDeep,
   netLine,
 ];
