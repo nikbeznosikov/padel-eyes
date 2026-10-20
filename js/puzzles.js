@@ -1914,6 +1914,436 @@ const dropWhenDeep = {
   sources: [],
 };
 
+const PADELSTAR_DEFENSE = "https://padelstar.es/tactica-padel/consejos-para-una-buena-defensa-en-padel/";
+
+const firstVolley = {
+  id: "serve-first-volley",
+  group: "basics",
+  category: "Serve",
+  title: "Your first volley after the serve",
+  question: "You served into the corner and ran in. The return comes to you. Where do you play your first volley?",
+  side: "right",
+  players: {
+    you: { x: 2.5, z: -7.7, stance: "back" },
+    partner: { x: -2.4, z: -3.0, stance: "net" },
+    opp1: { x: -3.0, z: 8.4, stance: "back" },
+    opp2: { x: 2.6, z: 8.4, stance: "back" },
+  },
+  intro: [
+    { by: "you", from: SERVE_SPOT, to: { x: -3.6, z: 5.4 }, apex: 1.55, stroke: "serve" },
+    { by: "opp1", when: { kind: "afterGlass", height: 0.5 }, to: { x: 1.0, z: -6.8 }, apex: 1.6, stroke: "drive" },
+  ],
+  introMoves: [{ who: "you", to: { x: 1.4, z: -4.2 }, at: 0.15, speed: 4.6 }],
+  decision: { by: "you", when: { kind: "cross", z: -3.9 } },
+  options: [
+    {
+      id: "A",
+      label: "Hard, back into the same corner",
+      marker: { x: -4.0, z: 9.9, kind: "target" },
+      correct: false,
+      result: "You are still off balance from the run. It hits their glass without bouncing: point lost.",
+      shots: [{ by: "you", to: { x: -4.0, z: 10 }, wallHeight: 1.6, apex: 1.7, stroke: "volley", tag: "TOO HARD", stopAfter: 1.2 }],
+      eventTags: [{ kind: "glass", text: "No bounce" }],
+    },
+    {
+      id: "B",
+      label: "Deep, down the middle",
+      marker: { x: 0.0, z: 7.6, kind: "target" },
+      correct: true,
+      result: "A safe, deep volley. They get no angle, and you are set at the net.",
+      shots: [
+        { by: "you", to: { x: 0.0, z: 7.6 }, speed: 12, stroke: "volley" },
+        { by: "opp1", when: { kind: "afterGlass", height: 0.9 }, to: { x: 0.6, z: -3.0 }, apex: 1.9, stroke: "drive", stopAfter: 0.8 },
+      ],
+    },
+    {
+      id: "C",
+      label: "Into the other corner",
+      marker: { x: 3.9, z: 7.8, kind: "target" },
+      correct: false,
+      result: "From the corner the other player has an angle. He passes you down the line.",
+      shots: [
+        { by: "you", to: { x: 3.9, z: 7.8 }, speed: 12, stroke: "volley" },
+        { by: "opp2", when: { kind: "afterGlass", height: 0.9 }, to: { x: 4.3, z: -5.8 }, speed: 15, stroke: "drive", tag: "DOWN THE LINE" },
+      ],
+    },
+  ],
+  lesson: "First volley after the serve: safe and deep, down the middle.",
+  explanation:
+    "After the serve you reach the net still moving, so the first volley must be safe. Deep down the middle gives them the fewest angles and gives you time to settle. Go for the corners later, when you are set and the ball is easier.",
+  wrong: {
+    A: "Off balance, a hard volley into the corner is easy to miss.",
+    C: "A ball into the corner gives them an angle to pass you.",
+  },
+  sources: [],
+};
+
+const secondServeReturn = {
+  id: "return-second-serve",
+  group: "advanced",
+  category: "Return",
+  title: "Return a slow second serve",
+  question: "Their second serve is slow, and the server comes in slowly. How do you return it?",
+  side: "right",
+  players: {
+    you: { x: 2.8, z: -8.6, stance: "back" },
+    partner: { x: -2.6, z: -8.6, stance: "back" },
+    opp1: { x: -2.4, z: 8.0, stance: "back" },
+    opp2: { x: 2.3, z: 3.0, stance: "net" },
+  },
+  intro: [{ by: "opp1", from: { x: -2.4, y: 0.8, z: 8.0 }, to: { x: 2.3, z: -5.0 }, apex: 1.75, stroke: "serve", tag: "2ND SERVE" }],
+  introMoves: [{ who: "opp1", to: { x: -1.9, z: 5.4 }, at: 0.3, speed: 2.4 }],
+  decision: { by: "you", when: { kind: "afterBounce", height: 0.9 } },
+  options: [
+    {
+      id: "A",
+      label: "A chiquita at the server's feet",
+      marker: { x: -1.7, z: 3.6, kind: "target" },
+      correct: true,
+      result: "He has to lift it from his feet. You both move up, and you volley it away.",
+      shots: [
+        { by: "you", to: { x: -1.7, z: 3.6 }, apex: 1.5, stroke: "drive", tag: "CHIQUITA" },
+        { by: "opp1", when: { kind: "onRise", height: 0.4 }, to: { x: 1.4, z: -5.6 }, apex: 2.5, stroke: "volley" },
+        { by: "you", when: { kind: "cross", z: -3.6 }, to: { x: -4.1, z: 3.2 }, speed: 12, stroke: "volley" },
+      ],
+      moves: [
+        { who: "you", to: { x: 2.2, z: -3.8 }, at: 0.25, speed: 4.5 },
+        { who: "partner", to: { x: -2.2, z: -3.8 }, at: 0.3, speed: 4.5 },
+      ],
+    },
+    {
+      id: "B",
+      label: "A medium drive crosscourt",
+      marker: { x: -2.2, z: 6.8, kind: "target" },
+      correct: false,
+      result: "It reaches him at an easy height. He volleys it deep and walks on to the net.",
+      shots: [
+        { by: "you", to: { x: -2.2, z: 6.8 }, apex: 2.2, stroke: "drive" },
+        { by: "opp1", when: { kind: "cross", z: 5.6 }, to: { x: 1.6, z: -8.0 }, speed: 13, stroke: "volley" },
+      ],
+      moves: [{ who: "opp1", to: { x: -1.8, z: 3.2 }, at: 1.2, speed: 3.5 }],
+    },
+    {
+      id: "C",
+      label: "A lob",
+      marker: { x: 2.4, z: 8.2, kind: "target" },
+      correct: false,
+      result: "He is not at the net yet, so he gets to your lob easily. Your chance is gone.",
+      shots: [
+        { by: "you", to: { x: 2.4, z: 8.2 }, apex: 5.5, stroke: "lob", tag: "LOB" },
+        { by: "opp1", when: { kind: "afterBounce", height: 1.0 }, to: { x: 0.4, z: -8.0 }, apex: 5.6, stroke: "lob", stopAfter: 1.6 },
+      ],
+    },
+  ],
+  lesson: "Slow second serve, server still on his way in: a chiquita at his feet, then move up.",
+  explanation:
+    "A slow second serve is your chance to attack. The server is not at the net yet, so the space at his feet is open. A soft ball that dips there makes him hit up, and you can take the net. Lob when the server is already close to the net, not while he is still behind.",
+  wrong: {
+    B: "A ball at an easy height is easy to volley.",
+    C: "A lob works against a player close to the net. This server is still behind.",
+  },
+  sources: [
+    {
+      title: "The Padel School: the perfect padel return, where to aim",
+      url: TPS_RETURN,
+      kind: "quote",
+      text: "You want to aim your return down to the feet of the server",
+      lang: "en",
+    },
+    {
+      title: "Padel Addict: cómo y cuándo hacer la chiquita",
+      url: PA_CHIQUITA,
+      kind: "summary",
+      text: "The chiquita is a good choice when the opponents stand a little far from the net: they must lift the ball, and you move up.",
+      lang: "es",
+    },
+  ],
+};
+
+const overheadReset = {
+  id: "transition-overhead-reset",
+  group: "advanced",
+  category: "Net play",
+  title: "Lobbed at your service line",
+  question: "You are at your service line, and both of them are at the net. Their lob goes over you. What do you do?",
+  side: "right",
+  players: {
+    you: { x: 2.3, z: -5.4, stance: "net" },
+    partner: { x: -2.4, z: -7.6, stance: "back" },
+    opp1: { x: -2.2, z: 3.0, stance: "net" },
+    opp2: { x: 2.2, z: 3.0, stance: "net" },
+  },
+  intro: [{ by: "opp1", from: { x: -2.2, y: 1.1, z: 3.0 }, to: { x: 2.6, z: -8.2 }, apex: 4.6, stroke: "volley", tag: "LOB" }],
+  decision: { at: 0.75 },
+  options: [
+    {
+      id: "A",
+      label: "A bandeja to the crosscourt player",
+      marker: { x: -2.0, z: 4.8, kind: "target" },
+      correct: false,
+      result: "He volleys it between you and your partner. You are both out of place.",
+      shots: [
+        { by: "you", when: { kind: "cross", z: -6.0 }, to: { x: -2.0, z: 4.8 }, speed: 12, stroke: "overhead", tag: "BANDEJA" },
+        { by: "opp1", when: { kind: "cross", z: 3.4 }, to: { x: -0.3, z: -5.4 }, speed: 13, stroke: "volley" },
+      ],
+    },
+    {
+      id: "B",
+      label: "Let it go to the glass, then lob them",
+      correct: true,
+      result: "They have to run back, and you both take the net.",
+      shots: [{ by: "you", when: { kind: "afterGlass", height: 1.0 }, to: { x: -0.8, z: 8.2 }, apex: 6.0, stroke: "lob", tag: "LOB" }],
+      moves: [
+        { who: "opp1", to: { x: -1.6, z: 7.6 }, at: 0.5, speed: 4.5 },
+        { who: "opp2", to: { x: 1.8, z: 7.8 }, at: 0.45, speed: 4.5 },
+        { who: "you", to: { x: 2.4, z: -3.6 }, at: 0.9, speed: 4.5 },
+        { who: "partner", to: { x: -2.4, z: -3.6 }, at: 0.95, speed: 4.5 },
+      ],
+    },
+    {
+      id: "C",
+      label: "A bandeja to the player in front of you",
+      marker: { x: 2.0, z: 4.8, kind: "target" },
+      correct: false,
+      result: "He volleys it at a sharp angle past you.",
+      shots: [
+        { by: "you", when: { kind: "cross", z: -6.0 }, to: { x: 2.0, z: 4.8 }, speed: 12, stroke: "overhead", tag: "BANDEJA" },
+        { by: "opp2", when: { kind: "cross", z: 3.4 }, to: { x: 4.3, z: -3.6 }, speed: 12, stroke: "volley" },
+      ],
+    },
+  ],
+  lesson: "They are both at the net? An overhead from your service line only feeds their volley. Let it go and lob.",
+  explanation:
+    "A bandeja works when you are at the net and they are at the back. Here they are already at the net and you are deep, so a slow overhead is an easy volley for them while you and your partner are out of place. Let the ball come off your glass and lob deep. They have to run back, and you can take the net.",
+  wrong: {
+    A: "A slow overhead to a player at the net is an easy volley.",
+    C: "A slow overhead to a player at the net is an easy volley.",
+  },
+  sources: [],
+};
+
+const difficultBall = {
+  id: "defense-difficult-ball",
+  group: "basics",
+  category: "Defense",
+  title: "A hard ball into your corner",
+  question: "Their hard volley pulls you into your corner. You just reach it off the glass. What is your goal now?",
+  side: "right",
+  players: {
+    you: { x: 2.4, z: -8.2, stance: "back" },
+    partner: { x: -2.5, z: -8.2, stance: "back" },
+    opp1: { x: -2.2, z: 3.0, stance: "net" },
+    opp2: { x: 2.2, z: 3.0, stance: "net" },
+  },
+  intro: [{ by: "opp1", from: { x: -2.2, y: 1.1, z: 3.0 }, to: { x: 4.0, z: -6.6 }, speed: 15, stroke: "volley", tag: "HARD ANGLE" }],
+  decision: { by: "you", when: { kind: "afterGlass", height: 0.62 } },
+  options: [
+    {
+      id: "A",
+      label: "Lob, then run to the net",
+      correct: false,
+      result: "From that low ball the lob comes out short. They smash it while you run in.",
+      shots: [
+        { by: "you", to: { x: 0.4, z: 4.4 }, apex: 4.6, stroke: "lob", tag: "SHORT LOB" },
+        { by: "opp2", when: { kind: "cross", z: 2.6 }, to: { x: -0.4, z: -6.2 }, speed: 21, stroke: "overhead", tag: "SMASH" },
+      ],
+      moves: [
+        { who: "you", to: { x: 2.2, z: -4.2 }, at: 0.2, speed: 4.5 },
+        { who: "partner", to: { x: -2.2, z: -4.2 }, at: 0.25, speed: 4.5 },
+      ],
+    },
+    {
+      id: "B",
+      label: "Just send back a ball they can't attack",
+      correct: true,
+      result: "Your low ball through the middle makes them volley up. You are back in the point.",
+      shots: [
+        { by: "you", to: { x: 0.1, z: 4.0 }, apex: 1.45, stroke: "drive" },
+        { by: "opp1", when: { kind: "cross", z: 3.2 }, to: { x: 1.2, z: -6.8 }, apex: 2.5, stroke: "volley", stopAfter: 1.1 },
+      ],
+    },
+    {
+      id: "C",
+      label: "Go for an angled winner",
+      correct: false,
+      result: "From so deep and so low the angle is too hard. Your ball goes into the net.",
+      shots: [{ by: "you", to: { x: -4.2, z: 2.0 }, apex: 0.95, stroke: "drive", tag: "ANGLE" }],
+    },
+  ],
+  lesson: "On a hard ball, don't try to win. Send back a ball they can't attack, and wait for a better one.",
+  explanation:
+    "When a ball is hard to play, the goal is to stay in the point. A low ball through the middle is hard for them to attack. Trying to win at once, with a sharp angle or a run to the net, needs a perfect shot from a bad position, and it usually fails.",
+  wrong: {
+    A: "From a hard, low ball the lob is often short, and the run in leaves your back court empty.",
+    C: "A sharp angle from deep and low has almost no room to land.",
+  },
+  sources: [
+    {
+      title: "Padelstar: consejos para una buena defensa en pádel",
+      url: PADELSTAR_DEFENSE,
+      kind: "summary",
+      text: "When you are not comfortable at the back, play low with no lob: a volley is harder for them to win with than a smash off a bad lob.",
+      lang: "es",
+    },
+  ],
+};
+
+const NET_LOB = { by: "opp2", when: { kind: "afterBounce", height: 0.85 }, to: { x: 2.6, z: -7.6 }, apex: 4.4, stroke: "lob", tag: "LOB" };
+
+const partnerServesSpot = {
+  id: "positioning-partner-serves",
+  group: "basics",
+  category: "Positioning",
+  title: "Your partner serves: where do you stand?",
+  question: "Your partner is serving, and you wait at the net. How far from the net do you stand?",
+  side: "right",
+  players: {
+    you: { x: 2.4, z: -4.6, stance: "net" },
+    partner: { x: -2.5, z: -7.7, stance: "back" },
+    opp1: { x: -2.6, z: 8.4, stance: "back" },
+    opp2: { x: 2.8, z: 8.6, stance: "back" },
+  },
+  intro: [{ by: "partner", from: { x: -2.5, y: 0.8, z: -7.7 }, to: { x: 2.4, z: 5.9 }, apex: 1.55, stroke: "serve", tag: "YOUR PARTNER SERVES" }],
+  decision: { at: 0.35 },
+  options: [
+    {
+      id: "A",
+      label: "Very close, almost touching the net",
+      correct: false,
+      result: "The return lob goes over you. You run back, and they take the net.",
+      shots: [{ ...NET_LOB, stopAfter: 2.2 }],
+      moves: [
+        { who: "you", to: { x: 2.3, z: -1.1 }, at: 0, speed: 4 },
+        { who: "you", to: { x: 2.4, z: -6.0 }, at: 1.1, speed: 4.5 },
+        { who: "opp2", to: { x: 2.2, z: 3.2 }, at: 1.4, speed: 4.5 },
+        { who: "opp1", to: { x: -2.2, z: 3.2 }, at: 1.5, speed: 4.5 },
+      ],
+    },
+    {
+      id: "B",
+      label: "About two meters from the net",
+      correct: true,
+      result: "Two steps back are enough for their lob, and your bandeja keeps you at the net.",
+      shots: [NET_LOB, { by: "you", when: { kind: "cross", z: -4.4 }, to: { x: -3.2, z: 7.6 }, speed: 13, stroke: "overhead", tag: "BANDEJA" }],
+      moves: [{ who: "you", to: { x: 2.3, z: -2.5 }, at: 0, speed: 4 }],
+    },
+    {
+      id: "C",
+      label: "Back at the service line",
+      correct: false,
+      result: "The return dips at your feet. You can only lift it, and they volley it away.",
+      shots: [
+        { by: "opp2", when: { kind: "afterBounce", height: 0.85 }, to: { x: 2.4, z: -5.4 }, apex: 1.2, stroke: "drive" },
+        { by: "you", when: { kind: "onRise", height: 0.3 }, to: { x: 1.0, z: 4.0 }, apex: 2.6, stroke: "volley" },
+        { by: "opp1", when: { kind: "cross", z: 3.0 }, to: { x: -0.2, z: -6.4 }, speed: 16, stroke: "volley" },
+      ],
+      moves: [
+        { who: "you", to: { x: 2.3, z: -6.4 }, at: 0, speed: 4 },
+        { who: "opp1", to: { x: -2.2, z: 3.2 }, at: 0.9, speed: 4.5 },
+      ],
+    },
+  ],
+  lesson: "At the net, stand about two meters back: close enough to volley down, far enough to cover a lob.",
+  explanation:
+    "About 2 to 2.5 meters from the net you can still volley down at their feet, and a lob needs only two or three steps back. Closer to the net, any good lob beats you. Back at the service line, low balls land at your feet.",
+  wrong: {
+    A: "So close to the net, one good lob gets past you.",
+    C: "From the service line, a low return lands at your feet.",
+  },
+  sources: [
+    {
+      title: "Padel Browser: padel positioning, distance from the net",
+      url: PADEL_BROWSER_COVERAGE,
+      kind: "summary",
+      text: "The ideal net position is about 2 to 2.5 meters back from the net: you can still volley down at their feet and cover a lob with two or three steps back.",
+      lang: "en",
+    },
+    {
+      title: "Padel Browser: padel positioning. On standing touching-distance from the net:",
+      url: PADEL_BROWSER_COVERAGE,
+      kind: "quote",
+      text: "one decent lob turns it into a scramble",
+      lang: "en",
+    },
+  ],
+};
+
+const middleBall = {
+  id: "defense-play-the-middle",
+  group: "basics",
+  category: "Defense",
+  title: "Play it through the middle",
+  question: "Both of them are at the net. Their volley gives you an easy ball. Where do you aim your drive?",
+  side: "right",
+  players: {
+    you: { x: 2.6, z: -8.4, stance: "back" },
+    partner: { x: -2.6, z: -8.4, stance: "back" },
+    opp1: { x: -2.2, z: 3.0, stance: "net" },
+    opp2: { x: 2.2, z: 3.0, stance: "net" },
+  },
+  intro: [{ by: "opp2", from: { x: 2.2, y: 1.1, z: 3.0 }, to: { x: 2.8, z: -5.6 }, apex: 1.9, stroke: "volley" }],
+  decision: { by: "you", when: { kind: "afterBounce", height: 0.95 } },
+  options: [
+    {
+      id: "A",
+      label: "Down the middle, between them",
+      marker: { x: 0.0, z: 5.6, kind: "target" },
+      correct: true,
+      result: "They both go for it. He gets there late and can only push it back high.",
+      shots: [
+        { by: "you", to: { x: 0.0, z: 5.6 }, apex: 1.65, stroke: "drive" },
+        { by: "opp1", when: { kind: "cross", z: 3.1 }, to: { x: 1.2, z: -6.9 }, apex: 2.7, stroke: "volley", stopAfter: 1.1 },
+      ],
+      moves: [{ who: "opp2", to: { x: 0.9, z: 3.0 }, at: 0.2, speed: 3 }],
+    },
+    {
+      id: "B",
+      label: "At the player in front of you",
+      marker: { x: 2.3, z: 5.6, kind: "target" },
+      correct: false,
+      result: "He is waiting for it and volleys it into the gap between you.",
+      shots: [
+        { by: "you", to: { x: 2.3, z: 5.6 }, apex: 1.65, stroke: "drive" },
+        { by: "opp2", when: { kind: "cross", z: 3.2 }, to: { x: -0.4, z: -5.6 }, speed: 15, stroke: "volley" },
+      ],
+    },
+    {
+      id: "C",
+      label: "A sharp angle to the far side",
+      marker: { x: -4.0, z: 4.6, kind: "target" },
+      correct: false,
+      result: "The far player covers that side and volleys it into the middle of your court.",
+      shots: [
+        { by: "you", to: { x: -4.0, z: 4.6 }, apex: 1.65, stroke: "drive" },
+        { by: "opp1", when: { kind: "cross", z: 3.0 }, to: { x: 0.4, z: -5.2 }, speed: 15, stroke: "volley" },
+      ],
+    },
+  ],
+  lesson: "Against two net players, aim through the middle: they doubt who takes it, and they get no angle.",
+  explanation:
+    "A ball through the middle makes both net players hesitate about who takes it, and from the middle they have no sharp angle. A ball at one player, or out wide, goes to a player who is ready for it and gives him an angle.",
+  wrong: {
+    B: "He covers his line and is ready for that ball.",
+    C: "The far player covers his side, and a ball there gives him an angle.",
+  },
+  sources: [
+    {
+      title: "Padelstar: consejos para una buena defensa en pádel (tips from Manu Martín)",
+      url: PADELSTAR_DEFENSE,
+      kind: "summary",
+      text: "One of the five key tips for defending: try to play balls to the centre of the court.",
+      lang: "es",
+    },
+    {
+      title: "Padel Browser: padel positioning, who takes the middle ball",
+      url: PADEL_BROWSER_COVERAGE,
+      kind: "quote",
+      text: "Middle balls cause more arguments than any other shot in padel.",
+      lang: "en",
+    },
+  ],
+};
+
 // In play order: rules, then basics, then advanced.
 export const PUZZLES = [
   serveIntoFence,
@@ -1922,7 +2352,9 @@ export const PUZZLES = [
   serveToNet,
   serveWide,
   serveT,
+  firstVolley,
   secondServe,
+  partnerServesSpot,
   netHeight,
   lobDepth,
   lobApex,
@@ -1930,6 +2362,8 @@ export const PUZZLES = [
   kneeBallToGlass,
   shortBandeja,
   lowOrLob,
+  difficultBall,
+  middleBall,
   smashDefense,
   partnerWide,
   partnerReturnsMiddle,
@@ -1937,10 +2371,12 @@ export const PUZZLES = [
   chiquita,
   chiquitaLine,
   chiquitaLength,
+  secondServeReturn,
   returnRusher,
   readCrosscourt,
   deepLobBandeja,
   shortLobSmash,
+  overheadReset,
   dropWhenDeep,
   netLine,
 ];
